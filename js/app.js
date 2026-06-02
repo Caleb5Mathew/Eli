@@ -145,7 +145,8 @@
     }
     ticking = false;
   }
-  if (!reduce) {
+  var bigScreen = window.matchMedia("(min-width: 900px) and (pointer: fine)").matches;
+  if (!reduce && bigScreen) {
     track.addEventListener("scroll", function () {
       if (!ticking) { ticking = true; requestAnimationFrame(parallax); }
     }, { passive: true });

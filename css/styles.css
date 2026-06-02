@@ -63,6 +63,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  /* isolate each slide's painting so off-screen slides aren't kept in
+     memory (lighter than content-visibility, no blank-render risk) */
+  contain: layout paint style;
 }
 .slide--center { justify-content: center; text-align: center; }
 
@@ -99,22 +102,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     linear-gradient(178deg, var(--c-top) 0%, var(--c-mid) 54%, var(--c-bot) 100%);
 }
 
-/* organic, painterly haze drifting across the upper sky */
-.backdrop::before {
-  content: "";
-  position: absolute; inset: -8%;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='700'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0085 0.014' numOctaves='4' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E");
-  background-size: 150% 150%;
-  mix-blend-mode: soft-light;
-  opacity: .42;
-  -webkit-mask: linear-gradient(180deg, #000 0%, #000 42%, transparent 82%);
-          mask: linear-gradient(180deg, #000 0%, #000 42%, transparent 82%);
-  animation: haze 72s ease-in-out infinite alternate;
-}
-@keyframes haze {
-  from { transform: translate3d(-2.5%, -1%, 0) scale(1.08); }
-  to   { transform: translate3d(3%, 1.5%, 0) scale(1.16); }
-}
+/* (a live SVG-noise haze layer used to live here; removed — it was the main
+   cause of iOS Safari running out of memory. The soft gradients + static
+   grain give plenty of atmosphere without a per-slide runtime filter.) */
 
 /* optional AI backdrop image layer (progressive enhancement) */
 .backdrop picture, .backdrop img.photo {
@@ -307,12 +297,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .fx { position: absolute; inset: 0; pointer-events: none; }
 /* run effects only on the slide you're viewing — keeps memory/GPU low so the
    mobile browser never reloads the tab */
-.slide:not(.is-active) .fx,
-.slide:not(.is-active) .backdrop::before { animation-play-state: paused; }
+.slide:not(.is-active) .fx { animation-play-state: paused; }
 
 /* clouds — soft layered masses near the top */
 .fx-cloud {
-  filter: blur(34px);
+  filter: blur(12px);
   opacity: .62;
 }
 .cloud-a {
@@ -328,10 +317,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     radial-gradient(44% 24% at 74% 12%, rgba(132,150,172,.46), transparent 72%);
   animation: drift-b 60s ease-in-out infinite alternate;
 }
-.cloud-b.dim { opacity: .95; filter: blur(22px) brightness(.8); }
+.cloud-b.dim { opacity: .95; filter: blur(12px) brightness(.8); }
 .cloud-b.high { opacity: .6; }
 /* brooding storm clouds (closing "Stormy Clouds" slide) */
-.fx-cloud.dark { opacity: .96; filter: blur(28px) brightness(.5); }
+.fx-cloud.dark { opacity: .96; filter: blur(14px) brightness(.5); }
 .cloud-a.dark { transform: scale(1.15); }
 @keyframes drift-a { from { transform: translate3d(-3%,0,0) scale(1.02); } to { transform: translate3d(4%,1.5%,0) scale(1.06); } }
 @keyframes drift-b { from { transform: translate3d(3%,0,0) scale(1.05); } to { transform: translate3d(-4%,-1%,0) scale(1.0); } }
@@ -347,7 +336,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .fx-shaft {
   background: linear-gradient(180deg, rgba(255,224,170,.0), rgba(255,224,170,.16) 40%, rgba(255,224,170,0));
   width: 32%; left: 34%; right: auto;
-  filter: blur(26px);
+  filter: blur(14px);
   mix-blend-mode: screen;
   animation: breathe 9s ease-in-out infinite;
 }
@@ -360,7 +349,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
       rgba(255,228,182,.12) 4.4deg 7deg);
   -webkit-mask: radial-gradient(86% 100% at 50% -4%, #000 0%, transparent 72%);
           mask: radial-gradient(86% 100% at 50% -4%, #000 0%, transparent 72%);
-  filter: blur(7px);
+  filter: blur(3px);
   mix-blend-mode: screen;
   opacity: .7;
   animation: breathe 12s ease-in-out infinite;
@@ -370,7 +359,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   background: repeating-conic-gradient(from 0deg at 50% -8%,
       rgba(255,226,176,0) 0deg 2.6deg,
       rgba(255,226,176,.17) 4deg 6.4deg);
-  filter: blur(6px);
+  filter: blur(3px);
   opacity: .92;
 }
 /* beams radiating from a central opening in the clouds */
@@ -380,7 +369,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
       rgba(255,224,172,.16) 4deg 6.8deg);
   -webkit-mask: radial-gradient(34% 52% at 50% 38%, #000 0%, rgba(0,0,0,.4) 36%, transparent 68%);
           mask: radial-gradient(34% 52% at 50% 38%, #000 0%, rgba(0,0,0,.4) 36%, transparent 68%);
-  filter: blur(6px);
+  filter: blur(3px);
   opacity: .7;
 }
 
@@ -458,7 +447,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     radial-gradient(54% 30% at 50% -8%, rgba(7,10,15,.9), transparent 68%),
     radial-gradient(62% 42% at 10% 98%, rgba(7,10,15,.9), transparent 70%),
     radial-gradient(62% 42% at 90% 98%, rgba(7,10,15,.9), transparent 70%);
-  filter: blur(22px);
+  filter: blur(13px);
   animation: drift-b 76s ease-in-out infinite alternate;
 }
 .fx-darkcloud.two {
@@ -467,7 +456,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     radial-gradient(40% 24% at 70% 6%, rgba(9,13,19,.82), transparent 72%),
     radial-gradient(48% 34% at 26% 96%, rgba(9,13,19,.8), transparent 72%),
     radial-gradient(48% 34% at 78% 96%, rgba(9,13,19,.8), transparent 72%);
-  filter: blur(30px);
+  filter: blur(15px);
   animation: drift-a 64s ease-in-out infinite alternate;
 }
 
