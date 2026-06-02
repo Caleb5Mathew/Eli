@@ -159,9 +159,13 @@
   }, { passive: true });
   setTimeout(hideHint, 5200);
 
-  /* keep position sane on resize / orientation change */
-  var rt;
+  /* re-center only when the width actually changes (orientation / desktop
+     resize) — ignore the height-only resize fired when a mobile browser
+     shows/hides its address bar, which otherwise yanks the slide around */
+  var rt, lastW = window.innerWidth;
   window.addEventListener("resize", function () {
+    if (window.innerWidth === lastW) return;
+    lastW = window.innerWidth;
     clearTimeout(rt);
     rt = setTimeout(function () {
       slides[current].scrollIntoView({ behavior: "auto", inline: "start", block: "nearest" });

@@ -5,12 +5,14 @@
 
 /* ---------- reset ---------- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; height: 100%; overscroll-behavior: none; }
 body {
   font-family: "Fraunces", Georgia, serif;
   color: #f4efe6;
   background: #0f1722;
+  height: 100%;
   overflow: hidden;
+  overscroll-behavior: none;          /* no pull-to-refresh / bounce reload */
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -44,6 +46,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;       /* swipes stay in the carousel, no page refresh */
+  touch-action: pan-x;                /* horizontal swipe only; blocks pull-to-refresh */
   scrollbar-width: none;
 }
 .track::-webkit-scrollbar { display: none; }
@@ -106,7 +110,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   -webkit-mask: linear-gradient(180deg, #000 0%, #000 42%, transparent 82%);
           mask: linear-gradient(180deg, #000 0%, #000 42%, transparent 82%);
   animation: haze 72s ease-in-out infinite alternate;
-  will-change: transform;
 }
 @keyframes haze {
   from { transform: translate3d(-2.5%, -1%, 0) scale(1.08); }
@@ -301,7 +304,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 /* ============================================================
    EFFECTS  ·  crafted atmospheric overlays
    ============================================================ */
-.fx { position: absolute; inset: 0; pointer-events: none; will-change: transform, opacity; }
+.fx { position: absolute; inset: 0; pointer-events: none; }
+/* run effects only on the slide you're viewing — keeps memory/GPU low so the
+   mobile browser never reloads the tab */
+.slide:not(.is-active) .fx,
+.slide:not(.is-active) .backdrop::before { animation-play-state: paused; }
 
 /* clouds — soft layered masses near the top */
 .fx-cloud {
