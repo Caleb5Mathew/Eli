@@ -1,0 +1,506 @@
+/* ============================================================
+   Eli — a poem, after 1 Kings 19
+   storm-blue  →  dawn-gold
+   ============================================================ */
+
+/* ---------- reset ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: "Fraunces", Georgia, serif;
+  color: #f4efe6;
+  background: #0f1722;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+img, svg { display: block; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+/* ---------- palette anchors (interpolated per slide via --t) ---------- */
+:root {
+  --storm-top: #0d141e;
+  --storm-bot: #2d4255;
+  --dawn-top:  #d7a86b;
+  --dawn-bot:  #f5cd83;
+  --amber:     #f3b75f;
+  --amber-soft:#ffd596;
+  --ink:       #f4efe6;
+  --measure:   38ch;
+  --ease:      cubic-bezier(.22,.61,.36,1);
+}
+
+/* ============================================================
+   TRACK  ·  horizontal scroll-snap
+   ============================================================ */
+.track {
+  display: flex;
+  width: 100%;
+  height: 100vh;            /* fallback */
+  height: 100dvh;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.track::-webkit-scrollbar { display: none; }
+
+.slide {
+  position: relative;
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  scroll-snap-align: center;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.slide--center { justify-content: center; text-align: center; }
+
+/* ============================================================
+   BACKDROP  ·  interpolated sky + effects + scrim
+   ============================================================ */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  /* interpolate the sky from storm to dawn using this slide's --t */
+  --c-top: color-mix(in oklab, var(--dawn-top) calc(var(--t) * 100%), var(--storm-top));
+  --c-bot: color-mix(in oklab, var(--dawn-bot) calc(var(--t) * 100%), var(--storm-bot));
+  background:
+    radial-gradient(135% 90% at 50% 118%,
+        color-mix(in oklab, var(--amber-soft) calc(var(--t) * 90%), transparent) 0%,
+        transparent 55%),
+    linear-gradient(178deg, var(--c-top) 0%, var(--c-bot) 100%);
+}
+
+/* optional AI backdrop image layer (progressive enhancement) */
+.backdrop picture, .backdrop img.photo {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+}
+.backdrop img.photo { object-fit: cover; opacity: .9; }
+
+/* the scrim keeps text legible on every slide */
+.scrim {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, rgba(7,11,16,.62) 0%, rgba(7,11,16,.30) 46%, rgba(7,11,16,0) 78%),
+    linear-gradient(0deg, rgba(7,11,16,.34) 0%, transparent 40%);
+}
+.scrim--center {
+  background: radial-gradient(70% 60% at 50% 50%, rgba(7,11,16,.42) 0%, rgba(7,11,16,.12) 55%, transparent 80%);
+}
+.scrim--center.light {
+  background: radial-gradient(75% 65% at 50% 50%, rgba(40,24,10,.30) 0%, rgba(40,24,10,.06) 60%, transparent 82%);
+}
+
+/* ============================================================
+   CONTENT
+   ============================================================ */
+.content {
+  position: relative;
+  z-index: 2;
+  isolation: isolate;
+  width: min(92vw, 720px);
+  margin-inline: clamp(1.4rem, 7vw, 8rem) auto;
+  padding-block: 8vh;
+}
+/* localized backing so text stays legible over bright dawn art,
+   without darkening the artwork on the rest of the slide */
+.content::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -7vh -16vw -7vh -18vw;
+  background: radial-gradient(118% 82% at 18% 50%,
+      rgba(5,8,12,.64) 0%, rgba(5,8,12,.38) 36%, rgba(5,8,12,0) 72%);
+  pointer-events: none;
+}
+.content--center { margin-inline: auto; }
+.content--center::before {
+  inset: -10vh -8vw;
+  background: radial-gradient(64% 58% at 50% 50%,
+      rgba(5,8,12,.52) 0%, rgba(5,8,12,.18) 52%, rgba(5,8,12,0) 74%);
+}
+
+/* ---------- title slide ---------- */
+.kicker {
+  font-family: "Inter", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .42em;
+  font-size: .74rem;
+  font-weight: 500;
+  color: var(--amber-soft);
+  opacity: .85;
+  margin-bottom: 1.4rem;
+  padding-left: .42em;
+}
+.title {
+  font-family: "Fraunces", serif;
+  font-optical-sizing: auto;
+  font-weight: 360;
+  font-style: italic;
+  font-size: clamp(5.5rem, 26vw, 16rem);
+  line-height: .9;
+  letter-spacing: -.01em;
+  text-shadow: 0 8px 60px rgba(0,0,0,.55), 0 0 90px rgba(243,183,95,.18);
+}
+.subtitle {
+  font-family: "EB Garamond", serif;
+  font-style: italic;
+  font-size: clamp(1.1rem, 4.5vw, 1.7rem);
+  letter-spacing: .04em;
+  color: #e9e2d4;
+  opacity: .9;
+  margin-top: 1.5rem;
+}
+.byline {
+  font-family: "Inter", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .34em;
+  font-size: .66rem;
+  margin-top: 3.2rem;
+  color: var(--amber-soft);
+  opacity: .7;
+}
+
+/* ---------- poem ---------- */
+.stanza { max-width: var(--measure); }
+.line {
+  font-family: "Fraunces", serif;
+  font-optical-sizing: auto;
+  font-weight: 340;
+  font-size: clamp(1.32rem, 3.5vw, 1.92rem);
+  line-height: 1.5;
+  letter-spacing: -.002em;
+  margin-bottom: 1.05rem;
+  text-shadow: 0 1px 26px rgba(0,0,0,.5);
+  text-wrap: pretty;
+  overflow-wrap: break-word;
+}
+.line:last-child { margin-bottom: 0; }
+
+/* ---------- scripture (amber light through cloud) ---------- */
+.scripture {
+  max-width: 40ch;
+  position: relative;
+  padding-left: clamp(1rem, 3vw, 1.6rem);
+  border-left: 2px solid color-mix(in oklab, var(--amber) 70%, transparent);
+}
+.scripture p {
+  font-family: "EB Garamond", serif;
+  font-style: italic;
+  font-size: clamp(1.28rem, 3.6vw, 1.78rem);
+  line-height: 1.62;
+  color: var(--amber);
+  text-shadow: 0 0 26px rgba(243,183,95,.28), 0 1px 18px rgba(0,0,0,.45);
+  margin-bottom: 1.1rem;
+}
+.scripture .sc {            /* small-caps "Lord" */
+  font-variant: small-caps;
+  letter-spacing: .04em;
+}
+.scripture .vn {            /* verse numbers */
+  font-family: "Inter", sans-serif;
+  font-style: normal;
+  font-size: .56em;
+  font-weight: 600;
+  color: var(--amber-soft);
+  opacity: .7;
+  margin-right: .15em;
+  vertical-align: .5em;
+}
+.scripture .ref {
+  display: block;
+  font-family: "Inter", sans-serif;
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: .26em;
+  font-size: .64rem;
+  color: var(--amber-soft);
+  opacity: .68;
+  margin-top: .4rem;
+}
+/* inline scripture allusion hook inside poem lines (small-caps Lord) */
+.line .sc { font-variant: small-caps; letter-spacing: .03em; color: color-mix(in oklab, var(--amber-soft) 78%, var(--ink)); }
+
+/* ---------- finale slide ---------- */
+.finale {
+  font-family: "Fraunces", serif;
+  font-style: italic;
+  font-weight: 360;
+  font-size: clamp(2rem, 8vw, 4.2rem);
+  line-height: 1.1;
+  text-shadow: 0 6px 50px rgba(0,0,0,.4), 0 0 70px rgba(255,213,150,.25);
+}
+.dedication {
+  font-family: "Inter", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .36em;
+  font-size: .72rem;
+  margin-top: 2.6rem;
+  color: var(--amber-soft);
+  text-shadow: 0 1px 18px rgba(0,0,0,.5);
+  opacity: .85;
+}
+
+/* ============================================================
+   EFFECTS  ·  crafted atmospheric overlays
+   ============================================================ */
+.fx { position: absolute; inset: 0; pointer-events: none; will-change: transform, opacity; }
+
+/* clouds — soft layered masses near the top */
+.fx-cloud {
+  filter: blur(26px);
+  opacity: .85;
+}
+.cloud-a {
+  background:
+    radial-gradient(38% 30% at 22% 22%, rgba(216,226,238,.55), transparent 70%),
+    radial-gradient(46% 34% at 58% 16%, rgba(196,210,226,.55), transparent 72%),
+    radial-gradient(40% 30% at 84% 26%, rgba(180,196,214,.5), transparent 72%);
+  animation: drift-a 46s ease-in-out infinite alternate;
+}
+.cloud-b {
+  background:
+    radial-gradient(50% 26% at 35% 8%, rgba(150,168,188,.5), transparent 72%),
+    radial-gradient(44% 24% at 74% 12%, rgba(132,150,172,.46), transparent 72%);
+  animation: drift-b 60s ease-in-out infinite alternate;
+}
+.cloud-b.dim { opacity: .95; filter: blur(22px) brightness(.8); }
+.cloud-b.high { opacity: .6; }
+@keyframes drift-a { from { transform: translate3d(-3%,0,0) scale(1.02); } to { transform: translate3d(4%,1.5%,0) scale(1.06); } }
+@keyframes drift-b { from { transform: translate3d(3%,0,0) scale(1.05); } to { transform: translate3d(-4%,-1%,0) scale(1.0); } }
+
+/* parting clouds (slide 7) */
+.cloud-part-l, .cloud-part-r { filter: blur(28px); opacity: .8; top: -6%; height: 86%; }
+.cloud-part-l { background: radial-gradient(60% 60% at 30% 30%, rgba(150,166,186,.6), transparent 70%); animation: part-l 22s var(--ease) infinite alternate; }
+.cloud-part-r { background: radial-gradient(60% 60% at 70% 30%, rgba(150,166,186,.6), transparent 70%); animation: part-r 22s var(--ease) infinite alternate; }
+@keyframes part-l { from { transform: translateX(0); } to { transform: translateX(-16%); } }
+@keyframes part-r { from { transform: translateX(0); } to { transform: translateX(16%); } }
+
+/* vertical light shaft (title) */
+.fx-shaft {
+  background: linear-gradient(180deg, rgba(255,224,170,.0), rgba(255,224,170,.16) 40%, rgba(255,224,170,0));
+  width: 32%; left: 34%; right: auto;
+  filter: blur(26px);
+  mix-blend-mode: screen;
+  animation: breathe 9s ease-in-out infinite;
+}
+@keyframes breathe { 0%,100% { opacity: .5; } 50% { opacity: .95; } }
+
+/* god-rays — radiating beams from the top, warm */
+.fx-rays {
+  background: repeating-conic-gradient(from 0deg at 50% -8%,
+      rgba(255,226,176,0) 0deg 2.4deg,
+      rgba(255,226,176,.14) 2.4deg 4.6deg);
+  -webkit-mask: radial-gradient(80% 95% at 50% 0%, #000 0%, transparent 70%);
+          mask: radial-gradient(80% 95% at 50% 0%, #000 0%, transparent 70%);
+  mix-blend-mode: screen;
+  opacity: .8;
+  animation: breathe 11s ease-in-out infinite;
+}
+.fx-rays.soft { opacity: .55; }
+.fx-rays.bright {
+  background: repeating-conic-gradient(from 0deg at 50% -6%,
+      rgba(255,224,170,0) 0deg 2deg,
+      rgba(255,224,170,.22) 2deg 4.4deg);
+  opacity: 1;
+}
+
+/* rain */
+.fx-rain {
+  background-image: repeating-linear-gradient(102deg,
+      rgba(200,214,230,.0) 0px,
+      rgba(200,214,230,.0) 9px,
+      rgba(200,214,230,.20) 10px,
+      rgba(200,214,230,.0) 12px);
+  background-size: 100% 120px;
+  opacity: .5;
+  animation: rain 0.7s linear infinite;
+}
+.fx-rain.sparse { opacity: .22; background-size: 100% 180px; }
+.fx-rain.warm { background-image: repeating-linear-gradient(102deg, rgba(255,222,170,0) 0px, rgba(255,222,170,0) 11px, rgba(255,222,170,.16) 12px, rgba(255,222,170,0) 14px); }
+@keyframes rain { from { background-position: 0 0; } to { background-position: -24px 120px; } }
+
+/* broom bush silhouette */
+.fx-bush {
+  top: auto; bottom: 0; height: 30%;
+  background:
+    radial-gradient(28% 70% at 50% 100%, rgba(8,12,16,.92), transparent 72%),
+    radial-gradient(10% 50% at 40% 100%, rgba(8,12,16,.8), transparent 70%),
+    radial-gradient(10% 56% at 60% 100%, rgba(8,12,16,.8), transparent 70%);
+  filter: blur(2px);
+}
+
+/* hidden sun (stanza 1 — forgotten sunny days) */
+.fx-hidden-sun {
+  background: radial-gradient(circle at 68% 30%, rgba(255,216,150,.22), transparent 18%);
+  filter: blur(8px);
+  animation: breathe 12s ease-in-out infinite;
+}
+
+/* water surface */
+.fx-water {
+  top: auto; bottom: 0; height: 46%;
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--storm-bot) 60%, #0b1118) 0%, #0a1016 100%),
+    repeating-linear-gradient(180deg, rgba(255,255,255,.05) 0 1px, transparent 1px 7px);
+  -webkit-mask: linear-gradient(180deg, transparent, #000 22%);
+          mask: linear-gradient(180deg, transparent, #000 22%);
+  opacity: .9;
+}
+.fx-water::after {
+  content: ""; position: absolute; inset: 0;
+  background: repeating-linear-gradient(180deg, rgba(255,225,180,.0) 0 3px, rgba(255,225,180,.07) 4px, rgba(255,225,180,0) 7px);
+  animation: shimmer 6s ease-in-out infinite alternate;
+}
+.fx-water.warm { background: linear-gradient(180deg, color-mix(in oklab, var(--dawn-bot) 40%, #1a1410) 0%, #120d0a 100%), repeating-linear-gradient(180deg, rgba(255,210,150,.07) 0 1px, transparent 1px 7px); }
+@keyframes shimmer { from { transform: translateY(0); opacity: .6; } to { transform: translateY(4px); opacity: 1; } }
+
+/* sun glow (closing) */
+.fx-sun {
+  background: radial-gradient(60% 50% at 50% 96%, rgba(255,214,150,.85) 0%, rgba(255,196,120,.4) 26%, transparent 60%);
+  mix-blend-mode: screen;
+  animation: breathe 10s ease-in-out infinite;
+}
+.fx-sun.full { background: radial-gradient(72% 60% at 50% 90%, rgba(255,224,168,.95) 0%, rgba(255,200,128,.5) 30%, transparent 64%); }
+
+/* mountain ridge (Horeb) */
+.fx-mountain {
+  top: auto; bottom: 0; height: 42%;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--dawn-bot) 30%, #1a2230), #0c1018);
+  clip-path: polygon(0% 100%, 0% 64%, 16% 40%, 30% 56%, 46% 22%, 58% 44%, 74% 18%, 88% 46%, 100% 30%, 100% 100%);
+}
+.fx-mountain::after {       /* gold rim light on the ridge */
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(255,214,150,.5), transparent 12%);
+  clip-path: inherit;
+  mix-blend-mode: screen;
+}
+.fx-mountain.low { height: 30%; opacity: .9; }
+
+/* svg overlays (path / steps / boat) */
+.fx-path, .fx-steps, .fx-boat { width: 100%; height: 100%; }
+.path-line {
+  fill: none;
+  stroke: rgba(255,222,170,.55);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-dasharray: 1 1;
+  filter: drop-shadow(0 0 6px rgba(255,210,150,.4));
+  animation: draw 3.4s var(--ease) forwards;
+}
+.path-fork { stroke: rgba(255,222,170,.28); animation-delay: .3s; }
+@keyframes draw { from { stroke-dasharray: 0 1400; } to { stroke-dasharray: 1400 0; } }
+.steps ellipse {
+  fill: rgba(255,220,168,.34);
+  filter: drop-shadow(0 0 5px rgba(255,205,145,.4));
+}
+.boat { stroke: rgba(255,224,176,.7); stroke-width: 2.2; fill: none; stroke-linejoin: round; stroke-linecap: round; filter: drop-shadow(0 0 6px rgba(255,210,150,.35)); }
+.boat path:first-child { fill: rgba(20,16,12,.5); }
+
+/* grain */
+.grain {
+  position: fixed; inset: 0; z-index: 50; pointer-events: none;
+  opacity: .045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ============================================================
+   REVEAL animations (title)
+   ============================================================ */
+.reveal { opacity: 0; transform: translateY(18px); animation: rise 1s var(--ease) forwards; animation-delay: var(--d, 0s); }
+@keyframes rise { to { opacity: 1; transform: none; } }
+
+/* slides animate their content in when they become active */
+.content .stanza, .content .scripture { opacity: 0; transform: translateY(16px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
+.slide.is-active .content .stanza,
+.slide.is-active .content .scripture { opacity: 1; transform: none; }
+.slide.is-active .line { animation: rise .9s var(--ease) both; }
+.line { animation-delay: calc(var(--li, 0) * .12s); }
+
+/* ============================================================
+   HUD  ·  progress + dots + nav + hint
+   ============================================================ */
+.hud {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+  display: flex; flex-direction: column; align-items: center; gap: .9rem;
+  padding: 0 1.2rem max(1.1rem, env(safe-area-inset-bottom)) ;
+  padding-top: 2.4rem;
+  background: linear-gradient(0deg, rgba(6,9,13,.5), transparent);
+}
+.progress { width: min(60vw, 360px); height: 2px; border-radius: 2px; background: rgba(255,255,255,.16); overflow: hidden; }
+.progress__bar { display: block; height: 100%; width: 9%; border-radius: 2px;
+  background: linear-gradient(90deg, color-mix(in oklab, var(--amber) 60%, #cdd6e0), var(--amber));
+  transition: width .5s var(--ease); }
+.dots { display: flex; gap: .55rem; }
+.dots button {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255,255,255,.28);
+  transition: transform .3s var(--ease), background .3s var(--ease);
+}
+.dots button:hover { background: rgba(255,255,255,.55); }
+.dots button[aria-current="true"] { background: var(--amber); transform: scale(1.5); }
+
+/* arrows */
+.nav {
+  position: fixed; top: 50%; transform: translateY(-50%); z-index: 40;
+  width: 52px; height: 52px; border-radius: 50%;
+  display: grid; place-items: center;
+  color: #f4efe6;
+  background: rgba(10,14,20,.28);
+  border: 1px solid rgba(255,255,255,.14);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  transition: background .3s, opacity .3s, transform .3s;
+}
+.nav svg { width: 22px; height: 22px; }
+.nav:hover { background: rgba(10,14,20,.5); }
+.nav--prev { left: clamp(.6rem, 2vw, 1.6rem); }
+.nav--next { right: clamp(.6rem, 2vw, 1.6rem); }
+.nav[disabled] { opacity: 0; pointer-events: none; }
+
+/* swipe hint */
+.hint {
+  position: fixed; left: 50%; bottom: 4.6rem; transform: translateX(-50%); z-index: 41;
+  display: flex; align-items: center; gap: .5rem;
+  font-family: "Inter", sans-serif; text-transform: uppercase; letter-spacing: .28em; font-size: .62rem;
+  color: rgba(255,255,255,.7);
+  transition: opacity .6s;
+  animation: nudge 2.4s ease-in-out infinite;
+}
+.hint svg { width: 36px; height: 14px; }
+.hint.hide { opacity: 0; pointer-events: none; }
+@keyframes nudge { 0%,100% { transform: translateX(-50%); } 50% { transform: translateX(calc(-50% + 8px)); } }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 640px) {
+  .content { width: 86vw; margin-inline: 7vw 7vw; padding-block: 11vh 17vh; }
+  .content--center { margin-inline: auto; }
+  .nav { display: none; }
+  .scripture { max-width: none; }
+  .stanza { max-width: none; }
+  .line { font-size: clamp(1.18rem, 5.1vw, 1.6rem); line-height: 1.46; }
+  .scripture p { font-size: clamp(1.16rem, 5vw, 1.6rem); }
+}
+@media (min-width: 1100px) {
+  .content { margin-left: clamp(6rem, 12vw, 14rem); }
+}
+
+/* ============================================================
+   ACCESSIBILITY · reduced motion
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .track { scroll-behavior: auto; }
+  .fx, .reveal, .hint, .progress__bar, .path-line,
+  .fx-water::after, .slide.is-active .line { animation: none !important; transition: none !important; }
+  .reveal { opacity: 1; transform: none; }
+  .content .stanza, .content .scripture { opacity: 1; transform: none; transition: none; }
+}
