@@ -311,6 +311,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 .cloud-b.dim { opacity: .95; filter: blur(22px) brightness(.8); }
 .cloud-b.high { opacity: .6; }
+/* brooding storm clouds (closing "Stormy Clouds" slide) */
+.fx-cloud.dark { opacity: .96; filter: blur(28px) brightness(.5); }
+.cloud-a.dark { transform: scale(1.15); }
 @keyframes drift-a { from { transform: translate3d(-3%,0,0) scale(1.02); } to { transform: translate3d(4%,1.5%,0) scale(1.06); } }
 @keyframes drift-b { from { transform: translate3d(3%,0,0) scale(1.05); } to { transform: translate3d(-4%,-1%,0) scale(1.0); } }
 
@@ -350,6 +353,16 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
       rgba(255,226,176,.17) 4deg 6.4deg);
   filter: blur(6px);
   opacity: .92;
+}
+/* beams radiating from a central opening in the clouds */
+.fx-rays.center {
+  background: repeating-conic-gradient(from 0deg at 50% 38%,
+      rgba(255,224,172,0) 0deg 2.4deg,
+      rgba(255,224,172,.16) 4deg 6.8deg);
+  -webkit-mask: radial-gradient(34% 52% at 50% 38%, #000 0%, rgba(0,0,0,.4) 36%, transparent 68%);
+          mask: radial-gradient(34% 52% at 50% 38%, #000 0%, rgba(0,0,0,.4) 36%, transparent 68%);
+  filter: blur(6px);
+  opacity: .7;
 }
 
 /* rain */
@@ -409,6 +422,44 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   animation: breathe 10s ease-in-out infinite;
 }
 .fx-sun.full { background: radial-gradient(72% 60% at 50% 90%, rgba(255,224,168,.95) 0%, rgba(255,200,128,.5) 30%, transparent 64%); }
+
+/* ---- closing "Stormy Clouds": deep storm framing a warm opening ---- */
+.slide--final .backdrop {
+  background:
+    radial-gradient(24% 18% at 50% 40%,
+        rgba(255,206,140,.5), rgba(255,184,108,.12) 48%, transparent 70%),   /* the opening */
+    radial-gradient(120% 95% at 50% 40%, transparent 18%, #070b12 70%),      /* storm closing in */
+    linear-gradient(180deg, #090f18 0%, #121925 52%, #0a1018 100%);          /* deep storm sky */
+}
+/* heavy dark cloud banks framing the opening */
+.fx-darkcloud {
+  background:
+    radial-gradient(42% 26% at 16% 14%, rgba(7,10,15,.96), transparent 70%),
+    radial-gradient(46% 28% at 84% 12%, rgba(7,10,15,.94), transparent 72%),
+    radial-gradient(54% 30% at 50% -8%, rgba(7,10,15,.9), transparent 68%),
+    radial-gradient(62% 42% at 10% 98%, rgba(7,10,15,.9), transparent 70%),
+    radial-gradient(62% 42% at 90% 98%, rgba(7,10,15,.9), transparent 70%);
+  filter: blur(22px);
+  animation: drift-b 76s ease-in-out infinite alternate;
+}
+.fx-darkcloud.two {
+  background:
+    radial-gradient(40% 24% at 34% 8%, rgba(9,13,19,.85), transparent 70%),
+    radial-gradient(40% 24% at 70% 6%, rgba(9,13,19,.82), transparent 72%),
+    radial-gradient(48% 34% at 26% 96%, rgba(9,13,19,.8), transparent 72%),
+    radial-gradient(48% 34% at 78% 96%, rgba(9,13,19,.8), transparent 72%);
+  filter: blur(30px);
+  animation: drift-a 64s ease-in-out infinite alternate;
+}
+
+/* warm light breaking through storm clouds — hope (closing slide) */
+.fx-breakglow {
+  background:
+    radial-gradient(20% 16% at 50% 39%, rgba(255,219,158,.78) 0%, rgba(255,198,124,.2) 46%, transparent 72%);
+  mix-blend-mode: screen;
+  filter: blur(12px);
+  animation: breathe 9s ease-in-out infinite;
+}
 
 /* mountain ridge (Horeb) */
 .fx-mountain {
@@ -481,9 +532,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .progress__bar { display: block; height: 100%; width: 9%; border-radius: 2px;
   background: linear-gradient(90deg, color-mix(in oklab, var(--amber) 60%, #cdd6e0), var(--amber));
   transition: width .5s var(--ease); }
-.dots { display: flex; gap: .55rem; }
+.dots { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; max-width: min(78vw, 460px); }
 .dots button {
-  width: 8px; height: 8px; border-radius: 50%;
+  width: 7px; height: 7px; border-radius: 50%;
   background: rgba(255,255,255,.28);
   transition: transform .3s var(--ease), background .3s var(--ease);
 }

@@ -1,6 +1,6 @@
-# Eli
+# a poem for mello
 
-A poem about the gift of stormy clouds — *after 1 Kings 19*. **For Mel.**
+A poem about the gift of stormy clouds — *after 1 Kings 19*. **For mello.**
 
 A single long poem presented as an eleven-movement journey that moves from
 **storm-blue to dawn-gold** as you advance. Swipe (touch), drag (mouse),
