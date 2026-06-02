@@ -163,6 +163,18 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 
 /* ---------- title slide ---------- */
+.hero-line {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .42em;
+  font-size: clamp(.86rem, 2.4vw, 1.18rem);
+  line-height: 1.5;
+  color: var(--amber-soft);
+  text-indent: .42em;                 /* re-center against trailing letter-spacing */
+  text-shadow: 0 1px 20px rgba(0,0,0,.45);
+  white-space: nowrap;
+}
 .kicker {
   font-family: "Inter", sans-serif;
   text-transform: uppercase;
