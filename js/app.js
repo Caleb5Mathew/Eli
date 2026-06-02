@@ -129,6 +129,29 @@
   track.addEventListener("pointerup", endDrag);
   track.addEventListener("pointercancel", endDrag);
 
+  /* scroll-linked parallax — foreground and backdrop drift in opposite
+     directions for cinematic depth (skipped under reduced motion) */
+  var bgs = slides.map(function (s) { return s.querySelector(".backdrop"); });
+  var contents = slides.map(function (s) { return s.querySelector(".content"); });
+  var ticking = false;
+  function parallax() {
+    var vw = track.clientWidth || 1;
+    var sl = track.scrollLeft;
+    for (var i = 0; i < slides.length; i++) {
+      var rel = (i * vw - sl) / vw;          /* 0 centered, ±1 one slide away */
+      if (rel < -1.15 || rel > 1.15) continue;
+      if (contents[i]) contents[i].style.transform = "translate3d(" + (rel * 6) + "%,0,0)";
+      if (bgs[i]) bgs[i].style.transform = "scale(1.06) translate3d(" + (rel * -2.6) + "%,0,0)";
+    }
+    ticking = false;
+  }
+  if (!reduce) {
+    track.addEventListener("scroll", function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(parallax); }
+    }, { passive: true });
+    parallax();
+  }
+
   /* hint fades after first interaction or 5s */
   function hideHint() { if (hint) hint.classList.add("hide"); }
   track.addEventListener("scroll", function () {
